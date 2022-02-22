@@ -9,7 +9,16 @@ restCtrl.start();
 restCtrl.join();
 ```
 
-Here is an example endpoint:
+Here is an example endpoint, calls:
+
+```bash
+http://127.0.0.1:8081/junit/rtest/larger1
+http://127.0.0.1:8081/junit/rtest/larger2
+http://127.0.0.1:8081/junit/rtest/larger3
+http://127.0.0.1:8081/junit/rtest/halt <--> shuts down server
+```
+
+Here is the code for the above.
 ```
 @Path("rtest")
 public class RestTest

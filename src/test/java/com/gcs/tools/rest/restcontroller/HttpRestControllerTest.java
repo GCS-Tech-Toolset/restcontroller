@@ -33,11 +33,10 @@ public class HttpRestControllerTest
     {
         try
         {
-            HttpRestController hrc = new HttpRestController("junit", 8081);
-            hrc.register(new RestTest());
-            hrc.start();
-            
-            hrc.join();
+            HttpRestController restCtrl = new HttpRestController("junit", 8081);
+            restCtrl.register(new RestTest());
+            restCtrl.start();
+            restCtrl.join();
         }
         catch (Exception ex_)
         {
