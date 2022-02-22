@@ -1,0 +1,43 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+  <id>distribution</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+
+  <baseDirectory>restcontroller</baseDirectory>
+  <includeBaseDirectory>true</includeBaseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>etc</directory>
+    </fileSet>
+    <fileSet>
+      <directory>bin</directory>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>*:jar</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+  
+  <!--files>
+    <file>
+      <source>bin/install.sh</source>
+      <outputDirectory>.</outputDirectory>
+    </file>
+  </files-->
+
+</assembly>

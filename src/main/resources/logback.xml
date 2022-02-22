@@ -1,0 +1,92 @@
+<configuration debug="true" scan="true">
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>TRACE</level>
+      <onMatch>DENY</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>DEBUG</level>
+      <onMatch>DENY</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>WARN</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <encoder>
+      <pattern>%d{HH:mm:ss:SSS} [%-5level] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+
+  <appender name="DBG" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>TRACE</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>DEBUG</level>
+      <onMatch>ACCEPT</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>DENY</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>WARN</level>
+      <onMatch>DENY</onMatch>
+    </filter>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>DENY</onMatch>
+    </filter>
+    <encoder>
+      <pattern>%d{HH:mm:ss:SSS} %class{0}::%M:[%-5level] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>./var/${logfile.name}</file>
+
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>./var/${logfile.name}.%d{yyyy-MM-dd}</fileNamePattern>
+
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <maxHistory>10</maxHistory>
+      <totalSizeCap>3GB</totalSizeCap>
+    </rollingPolicy>
+
+    <encoder>
+      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss:SSS} [%-5level] [%logger{0}] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+
+  <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE" />
+    <queueSize>1048576</queueSize>
+    <includeCallerData>false</includeCallerData>
+    <neverBlock>false</neverBlock>
+  </appender>
+
+  <logger name="org.apache.activemq" level="info" />
+  <logger name="org.jooq" level="info" />
+  <logger name="org.eclipse.jetty" level="info" />
+  <logger name="org.apache.commons.beanutils.FluentPropertyBeanIntrospector" level="WARN"/>
+
+
+  <root level="trace">
+    <appender-ref ref="STDOUT" />
+    <!--appender-ref ref="ASYNC" /-->
+    <!--appender-ref ref="DBG" /-->
+  </root>
+</configuration>
