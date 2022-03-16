@@ -78,4 +78,37 @@ public class RestTest
         o.add(rsps);
         return Response.status(Response.Status.OK).entity(o).build();
     }
+
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("halt")
+    public Response halt()
+    {
+        Thread r = new Thread()
+        {
+
+            @Override
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(10000);
+                    System.exit(0);
+                }
+                catch (InterruptedException ex_)
+                {
+                    ex_.printStackTrace();
+                }
+            }
+
+        };
+        r.start();
+
+
+        return Response.status(Response.Status.OK).entity(new String("shutting down system in: 10 sec")).build();
+    }
+
+
 ```
