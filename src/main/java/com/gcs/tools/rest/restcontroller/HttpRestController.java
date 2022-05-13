@@ -26,15 +26,22 @@ import javax.servlet.http.HttpServletResponse;
 
 
 
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
@@ -71,12 +78,34 @@ public class HttpRestController implements LifeCycle.Listener
 
     public HttpRestController(String appName_, int httpPort_) throws Exception
     {
-        _server = new Server();
+        QueuedThreadPool threadPool = new QueuedThreadPool(50, 50);
+        _server = new Server(threadPool);
+
         ServerConnector connector = new ServerConnector(_server);
         connector.setPort(httpPort_);
+        connector.setAcceptQueueSize(100);
+
+
+
+        /*if (getClass().getResource("/keystore.jks") != null)
+        {
+            HttpConfiguration https = new HttpConfiguration();
+            https.addCustomizer(new SecureRequestCustomizer());
+            https.setSecureScheme("https");
+            SslContextFactory sslContextFactory = new SslContextFactory();
+            sslContextFactory.setKeyStorePath(HttpRestController.class.getResource("/keystore.jks").toExternalForm());
+            sslContextFactory.setKeyStorePassword("123456");
+            sslContextFactory.setKeyManagerPassword("123456");
+            ServerConnector sslConnector = new ServerConnector(_server,
+                    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+                    new HttpConnectionFactory(https));
+            sslConnector.setPort(httpPort_ + 1);
+        }*/
+
         _server.setConnectors(new Connector[]
         {
-                connector
+                connector//,
+                //sslConnector
         });
 
 
@@ -196,6 +225,28 @@ public class HttpRestController implements LifeCycle.Listener
         try
         {
             _server.start();
+            System.out.println(_server.dump());
+        }
+        catch (Exception ex_)
+        {
+            _logger.error(ex_.toString(), ex_);
+        }
+    }
+
+
+
+
+
+    public void stop() throws HttpRestException
+    {
+        if (_server == null)
+        {
+            throw new HttpRestException("Server not initialized");
+        }
+
+        try
+        {
+            _server.stop();
             System.out.println(_server.dump());
         }
         catch (Exception ex_)
