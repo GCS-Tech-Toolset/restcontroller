@@ -66,8 +66,8 @@ public class HttpRestController implements LifeCycle.Listener
     private ResourceConfig          _resourceConfig;
     private Server                  _server;
 
-    @Getter @Setter private static int _MIN_THREADS = 5;
-    @Getter @Setter private static int _MAX_THREADS = 10;
+    @Getter @Setter private static int _MIN_THREADS = 11;
+    @Getter @Setter private static int _MAX_THREADS = 25;
 
 
 
