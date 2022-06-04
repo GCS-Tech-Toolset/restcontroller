@@ -6,6 +6,9 @@
     </encoder>
   </appender>
 
+	<logger name="org.eclipse.jetty" level="info" />
+	<logger name="com.gcs.tools.rest.restcontroller" level="debug"/>
+
   <root level="TRACE">
     <appender-ref ref="STDOUT" />
   </root>

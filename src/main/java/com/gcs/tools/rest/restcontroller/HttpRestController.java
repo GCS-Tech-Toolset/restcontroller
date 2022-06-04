@@ -23,24 +23,19 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
 
 
 
-import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.component.LifeCycle;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -65,12 +60,14 @@ import lombok.extern.slf4j.Slf4j;
 public class HttpRestController implements LifeCycle.Listener
 {
 
+    private static final String REFID = "X-Correlation-ID";
+
     @Getter @Setter private boolean _canRegister;
-    private ReentrantLock           _lock;
+    private ResourceConfig          _resourceConfig;
+    private Server                  _server;
 
-
-    private ResourceConfig _resourceConfig;
-    private Server         _server;
+    @Getter @Setter private static int _MIN_THREADS = 5;
+    @Getter @Setter private static int _MAX_THREADS = 10;
 
 
 
@@ -78,7 +75,7 @@ public class HttpRestController implements LifeCycle.Listener
 
     public HttpRestController(String appName_, int httpPort_) throws Exception
     {
-        QueuedThreadPool threadPool = new QueuedThreadPool(50, 50);
+        QueuedThreadPool threadPool = new QueuedThreadPool(_MAX_THREADS, _MIN_THREADS);
         _server = new Server(threadPool);
 
         ServerConnector connector = new ServerConnector(_server);
@@ -148,7 +145,10 @@ public class HttpRestController implements LifeCycle.Listener
             @Override
             public void doError(String target_, org.eclipse.jetty.server.Request baseRequest_, HttpServletRequest request_, HttpServletResponse response_) throws IOException
             {
-                _logger.error("target:{}", target_);
+                _logger.error("[{}] target:{}, response code:{}",
+                        response_.getHeader(REFID),
+                        baseRequest_.getOriginalURI(),
+                        Response.Status.fromStatusCode(response_.getStatus()));
                 super.doError(target_, baseRequest_, request_, response_);
             }
 
@@ -159,7 +159,9 @@ public class HttpRestController implements LifeCycle.Listener
             @Override
             protected void handleErrorPage(HttpServletRequest request_, Writer writer_, int code_, String message_) throws IOException
             {
-                _logger.error("target:{}", request_.getRequestURI());
+                _logger.error("[{}] target:{}",
+                        request_.getHeader(REFID),
+                        request_.getRequestURI());
                 super.handleErrorPage(request_, writer_, code_, message_);
             }
 
@@ -225,7 +227,10 @@ public class HttpRestController implements LifeCycle.Listener
         try
         {
             _server.start();
-            System.out.println(_server.dump());
+            if (_logger.isTraceEnabled())
+            {
+                _logger.trace(_server.dump());
+            }
         }
         catch (Exception ex_)
         {
@@ -246,8 +251,11 @@ public class HttpRestController implements LifeCycle.Listener
 
         try
         {
+            if (_logger.isTraceEnabled())
+            {
+                _logger.trace(_server.dump());
+            }
             _server.stop();
-            System.out.println(_server.dump());
         }
         catch (Exception ex_)
         {
@@ -347,21 +355,5 @@ public class HttpRestController implements LifeCycle.Listener
         }
         _server.join();
     }
-
-
-
-
-
-    public void print()
-    {
-        for (var v : _server.getChildHandlers())
-        {
-            System.out.println(v.toString());
-        }
-    }
-
-
-
-
 
 }
