@@ -52,6 +52,60 @@ public class HttpAsyncResponseManagerTest
 {
     private static final HttpAsyncResponseManager<Long> _asyncResponseManager = new HttpAsyncResponseManager(1, TimeUnit.SECONDS);
 
+
+
+
+    @Test
+    public void test()
+    {
+        try
+        {
+            String app = "junit-async-test";
+            int port = 12345;
+            HttpRestController.setMAX_THREADS(11);
+            HttpRestController.setMIN_THREADS(11);
+            HttpRestController ctrl = new HttpRestController(app, port);
+            ctrl.register(new HttpTestAsyc());
+            ctrl.start();
+
+
+            Client clnt = ClientBuilder.newBuilder().build();
+            WebTarget target = buildHttp(clnt, app, port, "asyncnormal");
+            Response rsps = target.request().get();
+            assertTrue(Response.Status.OK == Response.Status.fromStatusCode(rsps.getStatus()));
+
+
+
+            target = buildHttp(clnt, app, port, "asynctimeout");
+            rsps = target.request().get();
+            assertEquals(Response.Status.REQUEST_TIMEOUT, Response.Status.fromStatusCode(rsps.getStatus()));
+
+
+            ctrl.stop();
+
+        }
+        catch (Exception ex_)
+        {
+            _logger.error(ex_.toString(), ex_);
+        }
+
+    }
+
+
+
+
+
+    private WebTarget buildHttp(Client clnt_, String app_, int port_, String target_)
+    {
+        var wt = clnt_.target("http://localhost:" + port_).path(app_).path("junit").path(target_);
+        if (_logger.isTraceEnabled())
+        {
+            _logger.trace("web-target:{}", wt.toString());
+        }
+        return wt;
+    }
+
+
     @Path("/junit")
     public class HttpTestAsyc
     {
@@ -124,54 +178,5 @@ public class HttpAsyncResponseManagerTest
 
 
 
-    @Test
-    public void test()
-    {
-        try
-        {
-            String app = "junit-async-test";
-            int port = 12345;
-            HttpRestController.setMAX_THREADS(11);
-            HttpRestController.setMIN_THREADS(11);
-            HttpRestController ctrl = new HttpRestController(app, port);
-            ctrl.register(new HttpTestAsyc());
-            ctrl.start();
-
-
-            Client clnt = ClientBuilder.newBuilder().build();
-            WebTarget target = buildHttp(clnt, app, port, "asyncnormal");
-            Response rsps = target.request().get();
-            assertTrue(Response.Status.OK == Response.Status.fromStatusCode(rsps.getStatus()));
-
-
-
-            target = buildHttp(clnt, app, port, "asynctimeout");
-            rsps = target.request().get();
-            assertEquals(Response.Status.REQUEST_TIMEOUT, Response.Status.fromStatusCode(rsps.getStatus()));
-
-
-            ctrl.stop();
-
-        }
-        catch (Exception ex_)
-        {
-            _logger.error(ex_.toString(), ex_);
-        }
-
-    }
-
-
-
-
-
-    private WebTarget buildHttp(Client clnt_, String app_, int port_, String target_)
-    {
-        var wt = clnt_.target("http://localhost:" + port_).path(app_).path("junit").path(target_);
-        if (_logger.isTraceEnabled())
-        {
-            _logger.trace("web-target:{}", wt.toString());
-        }
-        return wt;
-    }
 
 }

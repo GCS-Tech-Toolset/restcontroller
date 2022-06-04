@@ -35,7 +35,7 @@ import com.fasterxml.jackson.jaxrs.yaml.YAMLMediaTypes;
 
 
 
-@Path("rtest")
+@Path("junit")
 public class RestTest
 {
 
