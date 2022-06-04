@@ -69,12 +69,14 @@ public class HttpAsyncResponseManagerTest
             Client clnt = ClientBuilder.newBuilder().build();
             WebTarget target = buildHttp(clnt, app, port, "asyncnormal");
             Response rsps = target.request().get();
+            rsps.close();
             assertTrue(Response.Status.OK == Response.Status.fromStatusCode(rsps.getStatus()));
 
 
             // expect a timeout
             target = buildHttp(clnt, app, port, "asynctimeout");
             rsps = target.request().get();
+            rsps.close();
             assertEquals(Response.Status.REQUEST_TIMEOUT, Response.Status.fromStatusCode(rsps.getStatus()));
 
 

@@ -75,6 +75,7 @@ public class HttpRestControllerTest
                 String str = rsps.readEntity(String.class);
                 _logger.debug(str.toString());
             }
+            rsps.close();
 
 
 
@@ -86,7 +87,7 @@ public class HttpRestControllerTest
                 String str = rsps.readEntity(String.class);
                 _logger.debug(str.toString());
             }
-
+            rsps.close();
 
 
             target = buildHttp(clnt, app, port, "larger2");
@@ -97,7 +98,7 @@ public class HttpRestControllerTest
                 String str = rsps.readEntity(String.class);
                 _logger.debug(str.toString());
             }
-
+            rsps.close();
 
             target = buildHttp(clnt, app, port, "larger3");
             rsps = target.request().get();
@@ -107,6 +108,7 @@ public class HttpRestControllerTest
                 String str = rsps.readEntity(String.class);
                 _logger.debug(str.toString());
             }
+            rsps.close();
 
 
 
