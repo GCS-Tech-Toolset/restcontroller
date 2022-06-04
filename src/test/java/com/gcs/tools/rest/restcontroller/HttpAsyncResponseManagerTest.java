@@ -41,6 +41,7 @@ import org.junit.Test;
 
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -50,11 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpAsyncResponseManagerTest
 {
-    private static final HttpAsyncResponseManager<Long> _asyncResponseManager = new HttpAsyncResponseManager(1, TimeUnit.SECONDS);
-
-
-
-
     @Test
     public void test()
     {
@@ -65,7 +61,8 @@ public class HttpAsyncResponseManagerTest
             HttpRestController.setMAX_THREADS(11);
             HttpRestController.setMIN_THREADS(11);
             HttpRestController ctrl = new HttpRestController(app, port);
-            ctrl.register(new HttpTestAsyc());
+            var asyncMgr = new HttpAsyncResponseManager<Long>(1, TimeUnit.SECONDS);
+            ctrl.register(new HttpTestAsyc(asyncMgr));
             ctrl.start();
 
 
@@ -75,7 +72,7 @@ public class HttpAsyncResponseManagerTest
             assertTrue(Response.Status.OK == Response.Status.fromStatusCode(rsps.getStatus()));
 
 
-
+            // expect a timeout
             target = buildHttp(clnt, app, port, "asynctimeout");
             rsps = target.request().get();
             assertEquals(Response.Status.REQUEST_TIMEOUT, Response.Status.fromStatusCode(rsps.getStatus()));
@@ -106,10 +103,15 @@ public class HttpAsyncResponseManagerTest
     }
 
 
+    @RequiredArgsConstructor
     @Path("/junit")
     public class HttpTestAsyc
     {
         private static final String REFID = "X-Correlation-ID";
+
+
+
+        @NonNull private HttpAsyncResponseManager<Long> _asyncResponseManager;
 
 
         @GET
@@ -125,7 +127,7 @@ public class HttpAsyncResponseManagerTest
 
 
 
-            long refId = Long.parseLong(Optional.ofNullable(refid_).orElse("" + System.nanoTime()));
+            long refId = Long.parseLong(Optional.ofNullable(refid_).orElse(Long.toString(System.nanoTime())));
             _asyncResponseManager.registerAsyncResponse(refId, rsps_);
             assertEquals(1, _asyncResponseManager.getPendingAsyncSize());
             rsps_.resume(Response.status(Response.Status.OK).header(REFID, System.nanoTime()).build());
@@ -149,7 +151,7 @@ public class HttpAsyncResponseManagerTest
 
 
 
-            long refId = Long.parseLong(Optional.ofNullable(refid_).orElse("" + System.nanoTime()));
+            long refId = Long.parseLong(Optional.ofNullable(refid_).orElse(Long.toString(System.nanoTime())));
             _asyncResponseManager.registerAsyncResponse(refId, rsps_);
             assertEquals(1, _asyncResponseManager.getPendingAsyncSize());
             try
