@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.gcs.tools.rest</groupId>
 	<artifactId>restcontroller</artifactId>
-	<version>0.0.1</version>
+	<version>1.1</version>
 
 
 	<properties>
