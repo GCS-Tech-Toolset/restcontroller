@@ -38,8 +38,6 @@ import org.junit.Test;
 
 
 
-import com.fasterxml.jackson.jaxrs.yaml.YAMLMediaTypes;
-
 
 
 import lombok.extern.slf4j.Slf4j;
