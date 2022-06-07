@@ -144,10 +144,11 @@ public class HttpRestController implements LifeCycle.Listener
             @Override
             public void doError(String target_, org.eclipse.jetty.server.Request baseRequest_, HttpServletRequest request_, HttpServletResponse response_) throws IOException
             {
-                _logger.error("[{}] target:{}, response code:{}",
-                        response_.getHeader(REFID),
+                _logger.error("[{}] general-error-target:{}, response code:{}",
+                        baseRequest_.getHeader(REFID),
                         baseRequest_.getOriginalURI(),
                         Response.Status.fromStatusCode(response_.getStatus()));
+                baseRequest_.getParameterMap().forEach((x, y) -> _logger.info("[{}] param:{}, val:{}", response_.getHeader(REFID), x, y));
                 super.doError(target_, baseRequest_, request_, response_);
             }
 
@@ -158,7 +159,7 @@ public class HttpRestController implements LifeCycle.Listener
             @Override
             protected void handleErrorPage(HttpServletRequest request_, Writer writer_, int code_, String message_) throws IOException
             {
-                _logger.error("[{}] target:{}",
+                _logger.error("[{}] errort-page-target:{}, generating error page",
                         request_.getHeader(REFID),
                         request_.getRequestURI());
                 super.handleErrorPage(request_, writer_, code_, message_);

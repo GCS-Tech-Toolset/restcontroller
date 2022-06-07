@@ -56,7 +56,7 @@ public class HttpAsyncResponseManager<T>
 
     public void registerAsyncResponse(@NonNull T refId_, @NonNull AsyncResponse rsps_)
     {
-        rsps_.setTimeout(1, TimeUnit.SECONDS);
+        rsps_.setTimeout(_timeout, _timeoutUnit);
         rsps_.setTimeoutHandler(_toHandler);
         _asyncResponse.put(refId_, rsps_);
         if (_logger.isTraceEnabled())
