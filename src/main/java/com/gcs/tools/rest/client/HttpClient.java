@@ -80,6 +80,22 @@ public class HttpClient
 
 
 
+    public Response getEntity(String url_) throws IOException
+    {
+        final long refid = System.nanoTime();
+        logRequest(url_, refid);
+        return _httpClient
+                .target(url_)
+                .request()
+                .header(X_CORRELATION_ID, refid)
+                .accept(MediaType.APPLICATION_JSON)
+                .get();
+    }
+
+
+
+
+
     public <T> T getEntity(String url_, Class<T> responseClass_) throws IOException
     {
         T responseObj = null;
@@ -144,6 +160,22 @@ public class HttpClient
         }
         rsps.close();
         return responseObj;
+    }
+
+
+
+
+
+    public final Response postEntity(String url_, Object out_) throws IOException
+    {
+        final long refid = System.nanoTime();
+        logRequest(url_, refid);
+        return _httpClient
+                .target(url_)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .header(X_CORRELATION_ID, refid)
+                .post(Entity.json(out_));
     }
 
 
