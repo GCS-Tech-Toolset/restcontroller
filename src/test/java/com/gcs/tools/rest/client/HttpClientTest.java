@@ -120,7 +120,7 @@ public class HttpClientTest
     {
         try
         {
-            HttpClient clnt = new HttpClient();
+            RestClient clnt = new RestClient();
             Hashtable<String, String> body = new Hashtable<>();
             body.put("test1", "value1");
             body.put("test2", "value2");

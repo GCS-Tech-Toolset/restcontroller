@@ -15,6 +15,7 @@ package com.gcs.tools.rest.restcontroller;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.BindException;
 import java.util.EnumSet;
 
 
@@ -65,6 +66,8 @@ public class HttpRestController implements LifeCycle.Listener
     private ResourceConfig          _resourceConfig;
     private Server                  _server;
 
+    private int _port;
+
     @Getter @Setter private static int _MIN_THREADS = 11;
     @Getter @Setter private static int _MAX_THREADS = 25;
 
@@ -76,6 +79,7 @@ public class HttpRestController implements LifeCycle.Listener
     {
         QueuedThreadPool threadPool = new QueuedThreadPool(_MAX_THREADS, _MIN_THREADS);
         _server = new Server(threadPool);
+        _port = httpPort_;
 
         ServerConnector connector = new ServerConnector(_server);
         connector.setPort(httpPort_);
@@ -231,6 +235,11 @@ public class HttpRestController implements LifeCycle.Listener
             {
                 _logger.trace(_server.dump());
             }
+        }
+        catch (BindException ex_ )
+        {
+            _logger.error("port:{}", _port);
+            _logger.error(ex_.toString(), ex_);
         }
         catch (Exception ex_)
         {

@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class HttpClient
+public class RestClient
 {
     private static final String X_CORRELATION_ID = "X-Correlation-ID";
 
@@ -58,7 +58,7 @@ public class HttpClient
 
 
 
-    public HttpClient()
+    public RestClient()
     {
         _objectMapper = new ObjectMapper();
         initializeHttpClient();
@@ -68,7 +68,7 @@ public class HttpClient
 
 
 
-    public HttpClient(int connectionTimeout_, int readTimeout_)
+    public RestClient(int connectionTimeout_, int readTimeout_)
     {
         _connectionTimeout = connectionTimeout_;
         _readTimout = readTimeout_;
@@ -256,7 +256,7 @@ public class HttpClient
     {
         if (_logger.isTraceEnabled())
         {
-            _logger.trace("[{}] {} sending request to:{}", refid_, url_);
+            _logger.trace("[{}] sending request to:{}", refid_, url_);
         }
     }
 
