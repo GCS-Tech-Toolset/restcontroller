@@ -8,6 +8,7 @@ package com.gcs.tools.rest.client;
 
 
 import com.gcs.tools.rest.client.exception.RestClientException;
+import com.gcs.tools.rest.client.interceptor.AuthorizationHeaderInterceptor;
 import com.gcs.tools.rest.client.interceptor.RequestInterceptor;
 import com.gcs.tools.rest.restcontroller.HttpRestController;
 import com.gcs.tools.rest.restcontroller.HttpRestException;
@@ -92,6 +93,22 @@ public class HttpClientTest
             return Response.ok(new TestResponse(refID_, param_)).build();
         }
 
+
+
+
+
+        @GET
+        @Path("withauthorization")
+        @Produces(MediaType.APPLICATION_JSON)
+        public Response getWithAuthorization(
+            @HeaderParam("X-Correlation-ID") String refID_,
+            @HeaderParam("Authorization") String authorization_)
+        {
+            _logger.info("[{}] val:{}", refID_, authorization_);
+            return Response.ok(new TestAuthResponse(refID_, authorization_)).build();
+        }
+
+
     }
 
 
@@ -167,8 +184,8 @@ public class HttpClientTest
             body.put("test2", "value2");
             body.put("test3", "value3");
             TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listener", body, TestResponse.class);
-            assertNotNull(st._refId);
-            assertNotNull(st._bodyAsString);
+            assertNotNull(st.getRefId());
+            assertNotNull(st.getBodyAsString());
         }
         catch (Exception ex_)
         {
@@ -190,8 +207,8 @@ public class HttpClientTest
                 .build();
             String body = "hello from unit tests";
             TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listener", body, TestResponse.class);
-            assertEquals("1234", st._refId);
-            assertNotNull(st._bodyAsString);
+            assertEquals("1234", st.getRefId());
+            assertNotNull(st.getBodyAsString());
         }
         catch (Exception ex_)
         {
@@ -224,8 +241,8 @@ public class HttpClientTest
             RestClient clnt = new RestClient();
             String param = "test_parameter";
             TestResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/somepath/" + param, TestResponse.class);
-            assertNotNull(st._refId);
-            assertEquals(st._bodyAsString, param);
+            assertNotNull(st.getRefId());
+            assertEquals(param, st.getBodyAsString());
         }
         catch (Exception ex_)
         {
@@ -248,8 +265,33 @@ public class HttpClientTest
                 .interceptors(asList(new TestRefIdInterceptor(refId)))
                 .build();
             TestResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/somepath/" + param, TestResponse.class);
-            assertEquals(refId, st._refId);
-            assertEquals(st._bodyAsString, param);
+            assertEquals(refId, st.getRefId());
+            assertEquals(param, st.getBodyAsString());
+        }
+        catch (Exception ex_)
+        {
+            fail(ex_.toString());
+        }
+    }
+
+
+
+
+
+    @Test
+    public void testGetEntity_Authorization()
+    {
+        try
+        {
+            String auth = "test_auth";
+            String refId = "5678";
+            RestClient clnt = RestClient.builder()
+                .interceptors(asList(new TestRefIdInterceptor(refId),
+                    new AuthorizationHeaderInterceptor(auth)))
+                .build();
+            TestAuthResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/withauthorization", TestAuthResponse.class);
+            assertEquals(refId, st.getRefId());
+            assertEquals("Bearer " + auth, st.getAuthorization());
         }
         catch (Exception ex_)
         {
@@ -298,5 +340,55 @@ public class HttpClientTest
         Assert.assertEquals(configuration.getProperty("jersey.config.client.connectTimeout"), 3000);
         Assert.assertEquals(configuration.getProperty("jersey.config.client.readTimeout"), 6000);
         Assert.assertEquals(configuration.getProperty("jersey.config.apache.client.connectionManager"), cm);
+    }
+
+
+
+
+
+    @Test
+    public void testRestClientBuilder_default()
+    {
+        RestClient client = RestClient.builder().build();
+        Configuration configuration = client.getHttpClient().getConfiguration();
+        Assert.assertEquals(1000, configuration.getProperty("jersey.config.client.connectTimeout"));
+        Assert.assertEquals(4000, configuration.getProperty("jersey.config.client.readTimeout"));
+        Assert.assertNull(configuration.getProperty("jersey.config.apache.client.connectionManager"));
+    }
+
+
+
+
+
+    @Test
+    public void testRestClientBuilder_timeout()
+    {
+        RestClient client = RestClient.builder()
+            .connectionTimeout(2000)
+            .readTimeout(5000)
+            .build();
+        Configuration configuration = client.getHttpClient().getConfiguration();
+        Assert.assertEquals(2000, configuration.getProperty("jersey.config.client.connectTimeout"));
+        Assert.assertEquals(5000, configuration.getProperty("jersey.config.client.readTimeout"));
+        Assert.assertNull(configuration.getProperty("jersey.config.apache.client.connectionManager"));
+    }
+
+
+
+
+
+    @Test
+    public void testRestClientBuilder_connectionPool()
+    {
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        RestClient client = RestClient.builder()
+            .connectionTimeout(3000)
+            .readTimeout(6000)
+            .connectionManager(cm)
+            .build();
+        Configuration configuration = client.getHttpClient().getConfiguration();
+        Assert.assertEquals(3000, configuration.getProperty("jersey.config.client.connectTimeout"));
+        Assert.assertEquals(6000, configuration.getProperty("jersey.config.client.readTimeout"));
+        Assert.assertEquals(cm, configuration.getProperty("jersey.config.apache.client.connectionManager"));
     }
 }
