@@ -16,4 +16,5 @@ public class TestResponse
 {
     @JsonProperty("refId") String _refId;
     @JsonProperty("bodyAsString") String _bodyAsString;
+    @JsonProperty("authorization") String _authorization;
 }

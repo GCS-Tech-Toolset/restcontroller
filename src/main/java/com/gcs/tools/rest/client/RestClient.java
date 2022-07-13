@@ -4,43 +4,40 @@
  ****************************************************************************/
 
 
-
-
-
 package com.gcs.tools.rest.client;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.glassfish.jersey.apache.connector.ApacheClientProperties;
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 
-
-
-import java.io.IOException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.glassfish.jersey.apache.connector.ApacheClientProperties;
-import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
-
-
+import static java.lang.String.format;
+import static org.eclipse.jetty.util.StringUtil.isNotBlank;
 
 
 @Slf4j
 public class RestClient
 {
     private static final String                 X_CORRELATION_ID = "X-Correlation-ID";
+    private static final String                 AUTHORIZATION = "Authorization";
 
 
-    private Client                              _httpClient;
+    private final Client                        _httpClient;
     private final ObjectMapper                  _objectMapper;
+    private final String                        _jwtToken;
 
 
     public static final int                    DEFAULT_CONNECTION_TIMEOUT = 1_000;
@@ -59,6 +56,15 @@ public class RestClient
 
 
 
+    public RestClient(String jwtToken_)
+    {
+        this(DEFAULT_CONNECTION_TIMEOUT, DEFAULT_READ_TIMEOUT, null, jwtToken_);
+    }
+
+
+
+
+
     public RestClient(int connectionTimeout_, int readTimeout_)
     {
         this(connectionTimeout_, readTimeout_, null);
@@ -70,9 +76,19 @@ public class RestClient
 
     public RestClient(int connectionTimeout_, int readTimeout_, PoolingHttpClientConnectionManager cm_)
     {
+        this(connectionTimeout_, readTimeout_, cm_, null);
+    }
+
+
+
+
+
+    public RestClient(int connectionTimeout_, int readTimeout_, PoolingHttpClientConnectionManager cm_, String jwtToken_)
+    {
         ClientConfig config = createClientConfig(connectionTimeout_, readTimeout_, cm_);
         _objectMapper = new ObjectMapper();
         _httpClient = ClientBuilder.newClient(config);
+        _jwtToken = isNotBlank(jwtToken_) ? format("Bearer %s", jwtToken_) : null;
     }
 
 
@@ -96,6 +112,7 @@ public class RestClient
                 .target(url_)
                 .request()
                 .header(X_CORRELATION_ID, refId_)
+                .header(AUTHORIZATION, _jwtToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .get();
     }
@@ -104,7 +121,7 @@ public class RestClient
 
 
 
-    public  <T> T getEntity(String url_, Class<T> responseClass_) throws IOException
+    public <T> T getEntity(String url_, Class<T> responseClass_) throws IOException
     {
         final long refId = System.nanoTime();
         return getEntity(url_, responseClass_, Long.toString(refId));
@@ -119,11 +136,12 @@ public class RestClient
         T responseObj = null;
         logRequest(url_, refId_);
         final Response rsps = _httpClient
-                .target(url_)
-                .request()
-                .header(X_CORRELATION_ID, refId_)
-                .accept(MediaType.APPLICATION_JSON)
-                .get();
+            .target(url_)
+            .request()
+            .header(X_CORRELATION_ID, refId_)
+            .header(AUTHORIZATION, _jwtToken)
+            .accept(MediaType.APPLICATION_JSON)
+            .get();
         if (rsps.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
         {
             responseObj = rsps.readEntity(responseClass_);
@@ -135,9 +153,9 @@ public class RestClient
         else
         {
             _logger.error("[{}] not-ok, error:[{}:{}]",
-                    refId_,
-                    rsps.getStatus(),
-                    Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
+                refId_,
+                rsps.getStatus(),
+                Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
         }
         rsps.close();
         return responseObj;
@@ -162,11 +180,12 @@ public class RestClient
         T responseObj = null;
         logRequest(url_, refId_);
         final Response rsps = _httpClient
-                .target(url_)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .header(X_CORRELATION_ID, refId_)
-                .get();
+            .target(url_)
+            .request()
+            .accept(MediaType.APPLICATION_JSON)
+            .header(X_CORRELATION_ID, refId_)
+            .header(AUTHORIZATION, _jwtToken)
+            .get();
         if (rsps.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
         {
 
@@ -180,9 +199,9 @@ public class RestClient
         else
         {
             _logger.error("[{}] not-ok, error:[{}:{}]",
-                    refId_,
-                    rsps.getStatus(),
-                    Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
+                refId_,
+                rsps.getStatus(),
+                Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
         }
         rsps.close();
         return responseObj;
@@ -206,11 +225,12 @@ public class RestClient
     {
         logRequest(url_, refId_);
         return _httpClient
-                .target(url_)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .header(X_CORRELATION_ID, refId_)
-                .post(Entity.json(out_));
+            .target(url_)
+            .request()
+            .accept(MediaType.APPLICATION_JSON)
+            .header(X_CORRELATION_ID, refId_)
+            .header(AUTHORIZATION, _jwtToken)
+            .post(Entity.json(out_));
     }
 
 
@@ -232,11 +252,12 @@ public class RestClient
         T responseObj = null;
         logRequest(url_, refId_);
         final Response rsps = _httpClient
-                .target(url_)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .header(X_CORRELATION_ID, refId_)
-                .post(Entity.json(out_));
+            .target(url_)
+            .request()
+            .accept(MediaType.APPLICATION_JSON)
+            .header(X_CORRELATION_ID, refId_)
+            .header(AUTHORIZATION, _jwtToken)
+            .post(Entity.json(out_));
         if (rsps.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
         {
             responseObj = rsps.readEntity(responseClass_);
@@ -250,9 +271,9 @@ public class RestClient
 
         rsps.close();
         _logger.error("[{}] not-ok, error:[{}:{}]",
-                refId_,
-                rsps.getStatus(),
-                Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
+            refId_,
+            rsps.getStatus(),
+            Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
         throw new IOException(rsps.getStatusInfo().getReasonPhrase());
     }
 
@@ -275,11 +296,12 @@ public class RestClient
         T responseObj = null;
         logRequest(url_, refId);
         final Response rsps = _httpClient
-                .target(url_)
-                .request()
-                .accept(MediaType.APPLICATION_JSON)
-                .header(X_CORRELATION_ID, refId)
-                .post(Entity.json(out_));
+            .target(url_)
+            .request()
+            .accept(MediaType.APPLICATION_JSON)
+            .header(X_CORRELATION_ID, refId)
+            .header(AUTHORIZATION, _jwtToken)
+            .post(Entity.json(out_));
         if (rsps.getStatusInfo().getFamily().equals(Response.Status.Family.SUCCESSFUL))
         {
 
@@ -296,9 +318,9 @@ public class RestClient
         {
             rsps.close();
             _logger.error("[{}] not-ok, error:[{}:{}]",
-                    refId,
-                    rsps.getStatus(),
-                    Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
+                refId,
+                rsps.getStatus(),
+                Response.Status.fromStatusCode(rsps.getStatus()).getReasonPhrase());
             throw new IOException(rsps.getStatusInfo().getReasonPhrase());
         }
     }
@@ -327,7 +349,7 @@ public class RestClient
         config.property(ClientProperties.CONNECT_TIMEOUT, connectionTimeout);
         config.property(ClientProperties.READ_TIMEOUT, readTimeout);
         config.register(JacksonJsonProvider.class);
-        if(cm_ != null)
+        if (cm_ != null)
         {
             config.property(ApacheClientProperties.CONNECTION_MANAGER, cm_);
             config.connectorProvider(new ApacheConnectorProvider());

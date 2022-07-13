@@ -86,6 +86,10 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# IDEA
+.idea
+*.iml
+
 ### OSX ###
 # General
 .DS_Store
