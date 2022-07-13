@@ -19,7 +19,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.MDC;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -38,6 +37,7 @@ import static com.gcs.tools.rest.client.RestClient.X_CORRELATION_ID;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
@@ -126,7 +126,6 @@ public class HttpClientTest
         public void intercept(Invocation.Builder invocationBuilder_, String url_)
         {
             invocationBuilder_.header(X_CORRELATION_ID, _refId);
-            MDC.put(X_CORRELATION_ID, _refId);
         }
     }
 
@@ -183,8 +182,9 @@ public class HttpClientTest
             body.put("test1", "value1");
             body.put("test2", "value2");
             body.put("test3", "value3");
-            TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listener", body, TestResponse.class);
-            assertNotNull(st.getRefId());
+            String refId = "1463415";
+            TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listener", body, TestResponse.class, refId);
+            assertEquals(refId, st.getRefId());
             assertNotNull(st.getBodyAsString());
         }
         catch (Exception ex_)
@@ -202,13 +202,11 @@ public class HttpClientTest
     {
         try
         {
-            RestClient clnt = RestClient.builder()
-                .interceptors(asList(new TestRefIdInterceptor("1234")))
-                .build();
+            RestClient clnt = new RestClient();
             String body = "hello from unit tests";
             TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listener", body, TestResponse.class);
-            assertEquals("1234", st.getRefId());
-            assertNotNull(st.getBodyAsString());
+            assertNotNull(st.getRefId());
+            assertEquals(body, st.getBodyAsString());
         }
         catch (Exception ex_)
         {
@@ -265,7 +263,7 @@ public class HttpClientTest
                 .interceptors(asList(new TestRefIdInterceptor(refId)))
                 .build();
             TestResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/somepath/" + param, TestResponse.class);
-            assertEquals(refId, st.getRefId());
+            assertTrue(st.getRefId().contains(refId));
             assertEquals(param, st.getBodyAsString());
         }
         catch (Exception ex_)
@@ -273,6 +271,8 @@ public class HttpClientTest
             fail(ex_.toString());
         }
     }
+
+
 
 
 
@@ -306,10 +306,9 @@ public class HttpClientTest
             String auth = "test_auth";
             String refId = "5678";
             RestClient clnt = RestClient.builder()
-                .interceptors(asList(new TestRefIdInterceptor(refId),
-                    new AuthorizationHeaderInterceptor(auth)))
+                .interceptors(asList(new AuthorizationHeaderInterceptor(auth)))
                 .build();
-            TestAuthResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/withauthorization", TestAuthResponse.class);
+            TestAuthResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/withauthorization", TestAuthResponse.class, refId);
             assertEquals(refId, st.getRefId());
             assertEquals("Bearer " + auth, st.getAuthorization());
         }

@@ -37,7 +37,9 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.gcs.tools.rest.client.RestClient.CustomRestClientBuilder.createClientConfig;
+import static com.gcs.tools.rest.client.RestClient.CustomRestClientBuilder.prepareDefaultInterceptors;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 
 @Slf4j
@@ -77,6 +79,14 @@ public class RestClient
             final var restClient = super.build();
             ClientConfig config = createClientConfig(restClient._connectionTimeout, restClient._readTimeout, restClient._connectionManager);
             restClient._httpClient = ClientBuilder.newClient(config);
+            if (isEmpty(restClient._interceptors)) {
+                restClient._interceptors = prepareDefaultInterceptors();
+            } else {
+                Collection<RequestInterceptor> mergedInterceptors = new ArrayList<>();
+                mergedInterceptors.addAll(prepareDefaultInterceptors());
+                mergedInterceptors.addAll(restClient._interceptors);
+                restClient._interceptors = mergedInterceptors;
+            }
             return restClient;
         }
 
@@ -98,6 +108,13 @@ public class RestClient
                 config.connectorProvider(new ApacheConnectorProvider());
             }
             return config;
+        }
+
+        static Collection<RequestInterceptor> prepareDefaultInterceptors()
+        {
+            List<RequestInterceptor> defaultInterceptors = new ArrayList<>();
+            defaultInterceptors.add(new RefIdInterceptor());
+            return defaultInterceptors;
         }
     }
 
@@ -362,13 +379,4 @@ public class RestClient
     }
 
 
-
-
-
-    private Collection<RequestInterceptor> prepareDefaultInterceptors()
-    {
-        List<RequestInterceptor> defaultInterceptors = new ArrayList<>();
-        defaultInterceptors.add(new RefIdInterceptor());
-        return defaultInterceptors;
-    }
 }
