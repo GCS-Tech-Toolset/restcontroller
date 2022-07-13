@@ -255,7 +255,7 @@ public class HttpClientTest
 
 
     @Test
-    public void testGetEntity_RefId()
+    public void testGetEntityWithInterceptor_RefId()
     {
         try
         {
@@ -265,6 +265,26 @@ public class HttpClientTest
                 .interceptors(asList(new TestRefIdInterceptor(refId)))
                 .build();
             TestResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/somepath/" + param, TestResponse.class);
+            assertEquals(refId, st.getRefId());
+            assertEquals(param, st.getBodyAsString());
+        }
+        catch (Exception ex_)
+        {
+            fail(ex_.toString());
+        }
+    }
+
+
+
+    @Test
+    public void testGetEntity_RefId()
+    {
+        try
+        {
+            String param = "test_parameter";
+            String refId = "5678";
+            RestClient clnt = new RestClient();
+            TestResponse st = clnt.getEntity("http://localhost:8000/junit/simulator/somepath/" + param, TestResponse.class, refId);
             assertEquals(refId, st.getRefId());
             assertEquals(param, st.getBodyAsString());
         }

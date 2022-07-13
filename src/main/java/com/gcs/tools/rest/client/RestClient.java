@@ -152,9 +152,27 @@ public class RestClient
 
 
 
+    public Response getEntity(String url_, String refId_)
+    {
+        return getProcessedInvocation(url_, refId_).get();
+    }
+
+
+
+
+
     public <T> T getEntity(String url_, Class<T> responseClass_) throws RestClientException
     {
         return processResponse(getProcessedInvocation(url_)::get, responseClass_);
+    }
+
+
+
+
+
+    public <T> T getEntity(String url_, Class<T> responseClass_, String refId_) throws RestClientException
+    {
+        return processResponse(getProcessedInvocation(url_, refId_)::get, responseClass_);
     }
 
 
@@ -170,9 +188,27 @@ public class RestClient
 
 
 
+    public <T> T getEntityFromString(String url_, Class<T> responseClass_, String refId_) throws IOException, RestClientException
+    {
+        return processResponseFromString(getProcessedInvocation(url_, refId_)::get, responseClass_);
+    }
+
+
+
+
+
     public final Response postEntity(String url_, Object out_) throws IOException
     {
         return getProcessedInvocation(url_).post(Entity.json(out_));
+    }
+
+
+
+
+
+    public final Response postEntity(String url_, Object out_, String refId_) throws IOException
+    {
+        return getProcessedInvocation(url_, refId_).post(Entity.json(out_));
     }
 
 
@@ -188,9 +224,27 @@ public class RestClient
 
 
 
+    public <T> T postEntity(String url_, Object out_, Class<T> responseClass_, String refId_) throws RestClientException
+    {
+        return processResponse(() -> getProcessedInvocation(url_, refId_).post(Entity.json(out_)), responseClass_);
+    }
+
+
+
+
+
     public <T> T postEntityFromString(String url_, Object out_, Class<T> responseClass_) throws IOException, RestClientException
     {
         return processResponseFromString(() -> getProcessedInvocation(url_).post(Entity.json(out_)), responseClass_);
+    }
+
+
+
+
+
+    public <T> T postEntityFromString(String url_, Object out_, Class<T> responseClass_, String refId_) throws IOException, RestClientException
+    {
+        return processResponseFromString(() -> getProcessedInvocation(url_, refId_).post(Entity.json(out_)), responseClass_);
     }
 
 
@@ -270,6 +324,24 @@ public class RestClient
 
     private Invocation.Builder getProcessedInvocation(String url_)
     {
+        final var builder = _httpClient
+            .target(url_)
+            .request()
+            .accept(MediaType.APPLICATION_JSON);
+        Stream.ofNullable(_interceptors)
+            .flatMap(Collection::stream)
+            .forEach(requestInterceptor_ -> requestInterceptor_.intercept(builder, url_));
+        return builder;
+    }
+
+
+
+
+
+    private Invocation.Builder getProcessedInvocation(String url_, String refId_)
+    {
+        ofNullable(refId_)
+            .ifPresent(refId -> MDC.put(X_CORRELATION_ID, refId));
         final var builder = _httpClient
             .target(url_)
             .request()
