@@ -16,14 +16,13 @@ public class RefIdInterceptor implements RequestInterceptor
     {
 
         String refId = ofNullable(MDC.get(X_CORRELATION_ID)).orElseGet(() -> String.valueOf(System.nanoTime()));
-        invocationBuilder_.header(X_CORRELATION_ID, null);
         invocationBuilder_.header(X_CORRELATION_ID, refId);
         MDC.put(X_CORRELATION_ID, refId);
 
 
         if (_logger.isTraceEnabled())
         {
-            _logger.trace("[{}] sending request to:{}", refId, url_);
+            _logger.trace("Setting refId [{}] to request URL: {}", refId, url_);
         }
     }
 }
