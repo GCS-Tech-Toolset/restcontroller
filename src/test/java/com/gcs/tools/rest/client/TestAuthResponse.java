@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TestResponse
+public class TestAuthResponse
 {
-    @JsonProperty("refId") private String _refId;
-    @JsonProperty("bodyAsString") private String _bodyAsString;
+    private String _refId;
+    private String _authorization;
 }
