@@ -58,8 +58,8 @@ public class HttpAsyncResponseManagerTest
         {
             String app = "junit-async-test";
             int port = 12345;
-            HttpRestController.setMAX_THREADS(11);
-            HttpRestController.setMIN_THREADS(11);
+            HttpRestController.setMAX_THREADS(13);
+            HttpRestController.setMIN_THREADS(13);
             HttpRestController ctrl = new HttpRestController(app, port);
             var asyncMgr = new HttpAsyncResponseManager<Long>(1, TimeUnit.SECONDS);
             ctrl.register(new HttpTestAsyc(asyncMgr));
