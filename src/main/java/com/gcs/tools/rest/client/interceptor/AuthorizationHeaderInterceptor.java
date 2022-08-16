@@ -22,6 +22,12 @@ public class AuthorizationHeaderInterceptor implements RequestInterceptor
     @Override
     public void intercept(Invocation.Builder invocationBuilder_, String url_)
     {
-        invocationBuilder_.header(AUTHORIZATION, format("Bearer %s", _jwtToken));
+        String jwtheader = format("Bearer %s", _jwtToken);
+
+        invocationBuilder_.header(AUTHORIZATION, jwtheader);
+        if (_logger.isTraceEnabled())
+        {
+            _logger.trace("adding header [{}] to request URL: {}", jwtheader, url_);
+        }
     }
 }

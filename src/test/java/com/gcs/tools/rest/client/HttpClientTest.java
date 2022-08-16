@@ -224,7 +224,7 @@ public class HttpClientTest
         RestClient clnt = new RestClient();
         Hashtable<String, String> body = new Hashtable<>();
         body.put("test1", "value1");
-        TestResponse st = clnt.postEntity("http://localhost:8000/junit/simulator/listenerWithException", body, TestResponse.class);
+        clnt.postEntity("http://localhost:8000/junit/simulator/listenerWithException", body, TestResponse.class);
     }
 
 
