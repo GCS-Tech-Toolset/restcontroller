@@ -29,6 +29,7 @@ import com.google.common.collect.HashBiMap;
 
 
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HttpAsyncResponseManager<T>
 {
-    private BiMap<T, AsyncResponse> _asyncResponse = HashBiMap.create();
+    private BiMap<T, AsyncResponse> _asyncResponse = Maps.synchronizedBiMap(HashBiMap.create());
     private HttpTimeoutHandler      _toHandler     = new HttpTimeoutHandler();
 
 
