@@ -29,6 +29,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +41,8 @@ import java.util.stream.Stream;
 import static com.gcs.tools.rest.client.RestClient.CustomRestClientBuilder.createClientConfig;
 import static com.gcs.tools.rest.client.RestClient.CustomRestClientBuilder.prepareDefaultInterceptors;
 import static java.util.Optional.ofNullable;
+import static javax.ws.rs.client.Entity.entity;
+import static javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 
@@ -264,6 +268,25 @@ public class RestClient
     }
 
 
+    public <T> T postBinary(String url_, byte[] out_, Class<T> responseClass_) throws RestClientException
+    {
+        return processResponse(() -> getBinaryDataInvocation(url_)
+            .post(entity(new ByteArrayInputStream(out_), APPLICATION_OCTET_STREAM)), responseClass_);
+    }
+
+
+
+
+
+    public <T> T postBinary(String url_, byte[] out_, Class<T> responseClass_, String refId_) throws RestClientException
+    {
+        ofNullable(refId_)
+            .ifPresent(refId -> MDC.put(X_CORRELATION_ID, refId));
+        return processResponse(() -> getBinaryDataInvocation(url_)
+            .post(entity(new ByteArrayInputStream(out_), APPLICATION_OCTET_STREAM)), responseClass_);
+    }
+
+
 
 
 
@@ -370,7 +393,17 @@ public class RestClient
         return builder;
     }
 
-
+    private Invocation.Builder getBinaryDataInvocation(String url_)
+    {
+        final var builder = _httpClient
+            .target(url_)
+            .request()
+            .accept(APPLICATION_OCTET_STREAM);
+        Stream.ofNullable(_interceptors)
+            .flatMap(Collection::stream)
+            .forEach(requestInterceptor_ -> requestInterceptor_.intercept(builder, url_));
+        return builder;
+    }
 
 
 

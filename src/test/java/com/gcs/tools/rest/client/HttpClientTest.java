@@ -64,6 +64,18 @@ public class HttpClientTest
         }
 
 
+        @POST
+        @Path("binary")
+        public Response receive(byte[] bytes, @HeaderParam("X-Correlation-ID") String refID_)
+        {
+            _logger.info("[{}] val:{}", bytes);
+
+            return bytes.length > 0 ?
+                Response.ok().build() :
+                Response.serverError().build();
+        }
+
+
 
 
 
@@ -192,6 +204,24 @@ public class HttpClientTest
             fail(ex_.toString());
         }
     }
+
+     @Test
+    public void testPostBinaryEntity()
+    {
+        try
+        {
+            RestClient clnt = new RestClient();
+            byte[] body = {'a', 'b'};
+            String refId = "1463415";
+            TestResponse st = clnt.postBinary("http://localhost:8000/junit/simulator/binary", body, TestResponse.class, refId);
+        }
+        catch (Exception ex_)
+        {
+            fail(ex_.toString());
+        }
+    }
+
+
 
 
 
