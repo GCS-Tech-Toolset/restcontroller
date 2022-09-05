@@ -76,6 +76,11 @@ public class HttpClientTest
         }
 
 
+        @GET
+        @Path("binary")
+        public Response getBinary() {
+            return Response.ok(new byte[]{1, 2, 3, 4}).build();
+        }
 
 
 
@@ -205,7 +210,7 @@ public class HttpClientTest
         }
     }
 
-     @Test
+    @Test
     public void testPostBinaryEntity()
     {
         try
@@ -214,6 +219,22 @@ public class HttpClientTest
             byte[] body = {'a', 'b'};
             String refId = "1463415";
             TestResponse st = clnt.postBinary("http://localhost:8000/junit/simulator/binary", body, TestResponse.class, refId);
+        }
+        catch (Exception ex_)
+        {
+            fail(ex_.toString());
+        }
+    }
+
+
+    @Test
+    public void testGetBinaryEntity()
+    {
+        try
+        {
+            RestClient clnt = new RestClient();
+            byte[] response = clnt.getBinary("http://localhost:8000/junit/simulator/binary");
+            assertEquals(4, response.length);
         }
         catch (Exception ex_)
         {
