@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -228,6 +229,11 @@ public class RestClient
     }
 
 
+
+    public byte[] getBinary(String url_) throws IOException {
+        return getProcessedInvocation(url_)
+            .get().readEntity(InputStream.class).readAllBytes();
+    }
 
 
 
