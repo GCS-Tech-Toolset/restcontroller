@@ -113,6 +113,7 @@ public class HttpAsyncResponseManagerTest
 			Response rsps = target.request().header("X-Correlation-ID", "1111111111").get();
 			rsps.close();
 			assertTrue(Response.Status.OK == Response.Status.fromStatusCode(rsps.getStatus()));
+			_logger.info("[{}] completed successfully", rsps.getHeaderString("X-Correlation-ID"));
 
 
 			// expect a timeout
@@ -120,6 +121,7 @@ public class HttpAsyncResponseManagerTest
 			rsps = target.request().header("X-Correlation-ID", "2222222222").get();
 			rsps.close();
 			assertEquals(Response.Status.REQUEST_TIMEOUT, Response.Status.fromStatusCode(rsps.getStatus()));
+			_logger.info("[{}] timed out as expected", rsps.getHeaderString("X-Correlation-ID"));
 
 
 			ctrl.stop();
@@ -145,6 +147,9 @@ public class HttpAsyncResponseManagerTest
 		}
 		return wt;
 	}
+
+
+
 
 
 	@RequiredArgsConstructor
@@ -174,7 +179,7 @@ public class HttpAsyncResponseManagerTest
 			long refId = Long.parseLong(Optional.ofNullable(refid_).orElse(Long.toString(System.nanoTime())));
 			_asyncResponseManager.registerAsyncResponse(refId, rsps_);
 			assertEquals(1, _asyncResponseManager.getPendingAsyncSize());
-			rsps_.resume(Response.status(Response.Status.OK).header(REFID, System.nanoTime()).build());
+			rsps_.resume(Response.status(Response.Status.OK).header(REFID, refId).build());
 			_asyncResponseManager.removeAsyncResposne(refId);
 			assertEquals(0, _asyncResponseManager.getPendingAsyncSize());
 			MDC.clear();
@@ -211,13 +216,13 @@ public class HttpAsyncResponseManagerTest
 			if (rsps_.isSuspended())
 			{
 				fail("should never get here, since this timedout");
-				rsps_.resume(Response.status(Response.Status.OK).header(REFID, System.nanoTime()).build());
+				rsps_.resume(Response.status(Response.Status.OK).header(REFID, refId).build());
 				_asyncResponseManager.removeAsyncResposne(refId);
 			}
 
 
 			// this is useless, but should not cause an error...
-			rsps_.resume(Response.status(Response.Status.OK).header(REFID, System.nanoTime()).build());
+			rsps_.resume(Response.status(Response.Status.OK).header(REFID, refId).build());
 			assertEquals(0, _asyncResponseManager.getPendingAsyncSize());
 			MDC.clear();
 		}

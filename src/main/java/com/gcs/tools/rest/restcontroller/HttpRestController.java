@@ -70,13 +70,11 @@ public class HttpRestController implements LifeCycle.Listener
 
 	private static final String REFID = "X-Correlation-ID";
 
-	@Getter @Setter
-	private boolean			_canRegister;
-	private ResourceConfig	_resourceConfig;
-	private Server			_server;
+	@Getter @Setter private boolean _canRegister;
 
-
-	private IRestControllerProperties _props;
+	private IRestControllerProperties	_props;
+	private ResourceConfig				_resourceConfig;
+	private Server						_server;
 
 
 
@@ -84,9 +82,9 @@ public class HttpRestController implements LifeCycle.Listener
 
 	public HttpRestController(String appName_, int httpPort_) throws Exception
 	{
+		DefaultRestControllerProperties.getInstance().setAppName(appName_);
+		DefaultRestControllerProperties.getInstance().setHttpPort(httpPort_);
 		_props = DefaultRestControllerProperties.getInstance();
-		((DefaultRestControllerProperties) _props).setAppName(appName_);
-		((DefaultRestControllerProperties) _props).setHttpPort(httpPort_);
 		startServices();
 	}
 
@@ -251,19 +249,26 @@ public class HttpRestController implements LifeCycle.Listener
 			public void doError(String target_, org.eclipse.jetty.server.Request baseRequest_, HttpServletRequest request_, HttpServletResponse response_) throws IOException
 			{
 				MDC.put(REFID, baseRequest_.getHeader(REFID));
-				_logger.error("header:{}",baseRequest_.getHeader(REFID));
+				_logger.error("header:{}", baseRequest_.getHeader(REFID));
 				_logger.error("[{}] general-error-target:{}, response code:{}",
 						baseRequest_.getHeader(REFID),
 						baseRequest_.getOriginalURI(),
 						Response.Status.fromStatusCode(response_.getStatus()));
-				baseRequest_.getParameterMap().forEach((x, y) -> _logger.info("[{}] param:{}, val:{}", response_.getHeader(REFID), x, y));
-				var itr = baseRequest_.getHeaderNames().asIterator();
-				while (itr.hasNext())
-				{
-					final String header = itr.next();
-					_logger.info("{}={}", header, baseRequest_.getHeader(header));
-				}
 				super.doError(target_, baseRequest_, request_, response_);
+
+
+
+				if (_logger.isDebugEnabled())
+				{
+					baseRequest_.getParameterMap().forEach((x, y) -> _logger.info("[{}] param:{}, val:{}", response_.getHeader(REFID), x, y));
+					var itr = baseRequest_.getHeaderNames().asIterator();
+					while (itr.hasNext())
+					{
+						final String header = itr.next();
+						_logger.debug("{}={}", header, baseRequest_.getHeader(header));
+					}
+				}
+
 				MDC.clear();
 			}
 
@@ -300,6 +305,7 @@ public class HttpRestController implements LifeCycle.Listener
 				return true;
 
 			}
+
 		});
 	}
 
