@@ -26,12 +26,8 @@ import lombok.Setter;
 
 public class DefaultRestControllerProperties implements IRestControllerProperties
 {
-
-	@Getter @Setter
-	private String _appName;
-
-	@Getter @Setter
-	private int _httpPort;
+	@Getter @Setter private String	_appName;
+	@Getter @Setter private int		_httpPort;
 
 
 
