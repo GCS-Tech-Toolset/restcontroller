@@ -4,12 +4,62 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gcs.toolset</groupId>
 	<artifactId>rest</artifactId>
-	<version>1.9</version>
+	<version>1.10</version>
 
 
 	<properties>
 		<tomcat-version>8.0.48</tomcat-version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>q5id-central</id>
+			<name>q5id-libs-release</name>
+			<url>https://gcsrepo.jfrog.io/artifactory/q5id-libs-release</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>q5id-snapshots</id>
+			<name>q5id-libs-snapshot</name>
+			<url>https://gcsrepo.jfrog.io/artifactory/q5id-libs-snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>q5id-central</id>
+			<name>q5id-libs-release</name>
+			<url>https://gcsrepo.jfrog.io/artifactory/q5id-libs-release</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>q5id-snapshots</id>
+			<name>q5id-libs-snapshot</name>
+			<url>https://gcsrepo.jfrog.io/artifactory/q5id-libs-snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<dependencies>
 		<dependency>
