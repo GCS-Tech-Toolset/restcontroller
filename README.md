@@ -19,7 +19,8 @@ http://127.0.0.1:8081/junit/rtest/halt <--> shuts down server
 ```
 
 Here is the code for the above.
-```
+
+```java
 @Path("rtest")
 public class RestTest
 {
@@ -109,6 +110,12 @@ public class RestTest
 
         return Response.status(Response.Status.OK).entity(new String("shutting down system in: 10 sec")).build();
     }
-
-
 ```
+
+
+
+# Releases
+### 1.10
+
+  * added `BasicEndpoint` with abstract classes
+  * added `HttpUtils` class
