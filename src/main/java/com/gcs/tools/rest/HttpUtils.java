@@ -18,6 +18,12 @@ import java.util.Optional;
 
 
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
+
+
+
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -31,12 +37,18 @@ public class HttpUtils
 
     public static String getRefId(final String refId_)
     {
-        final String refId = Optional.ofNullable(refId_).orElse(Long.toString(System.nanoTime()));
-        if (_logger.isTraceEnabled())
-        {
-            _logger.trace("new refid: [{}]", refId_);
-        }
-        return refId;
+        return Optional.ofNullable(refId_).orElse(Long.toString(System.nanoTime()));
+    }
+
+
+
+
+
+    public static ResponseBuilder respond(
+            Status status_,
+            String refId_)
+    {
+        return Response.status(status_).header(REFID, refId_);
     }
 
 }

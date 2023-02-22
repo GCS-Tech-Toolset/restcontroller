@@ -234,6 +234,11 @@ public class HttpRestController implements LifeCycle.Listener
             if (_logger.isTraceEnabled())
             {
                 _logger.trace(_server.dump());
+                var itr = _resourceConfig.getResources().iterator();
+                while(itr.hasNext())
+                {
+                    _logger.info(itr.next().toString());
+                }
             }
         }
         catch (BindException ex_ )

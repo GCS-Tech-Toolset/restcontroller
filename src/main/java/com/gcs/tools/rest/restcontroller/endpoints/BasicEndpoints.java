@@ -19,6 +19,7 @@ import static com.gcs.tools.rest.HttpUtils.getRefId;
 
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -32,6 +33,10 @@ import javax.ws.rs.core.Response;
 
 
 
+import org.slf4j.MDC;
+
+
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,10 +45,20 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-@Path("/")
+//@Path("/basic")
 @RequiredArgsConstructor(onConstructor = @__(@Inject))
 public abstract class BasicEndpoints
 {
+
+
+
+    protected abstract Map<String,String> getPropsAsMap();
+
+
+
+
+
+    public abstract String getVersion();
 
 
 
@@ -60,11 +75,19 @@ public abstract class BasicEndpoints
         }
 
         String refid = getRefId(refId_);
-        if (_logger.isTraceEnabled())
+        try
         {
-            _logger.trace("refid");
+            MDC.put(refId_, refid);
+            if (_logger.isInfoEnabled())
+            {
+                _logger.info("BasicEndpoints::healthcheck(refId_)");
+            }
+            return Response.ok().header(REFID, refid).build();
         }
-        return Response.ok().header(REFID, refid).build();
+        finally
+        {
+            MDC.clear();
+        }
     }
 
 
@@ -74,17 +97,25 @@ public abstract class BasicEndpoints
     @GET
     @Path("version")
     @Produces(MediaType.APPLICATION_JSON)
-    public final Response version(final @HeaderParam(REFID) String refId_)
+    public Response version(final @HeaderParam(REFID) String refId_)
     {
-        if (_logger.isTraceEnabled())
+        try
         {
-            _logger.trace("version(refId_)");
-        }
+            final String refid = getRefId(refId_);
+            MDC.put(REFID, refid);
+            if (_logger.isInfoEnabled())
+            {
+                _logger.info("BasicEndpoints::version(refId_)");
+            }
 
-        final String refid = getRefId(refId_);
-        var ht = new HashMap<String, String>();
-        ht.put("version", getVersion());
-        return Response.ok().header(REFID, refid).entity(ht).build();
+            var ht = new HashMap<String, String>();
+            ht.put("version", getVersion());
+            return Response.ok().header(REFID, refid).entity(ht).build();
+        }
+        finally
+        {
+            MDC.clear();
+        }
     }
 
 
@@ -96,27 +127,24 @@ public abstract class BasicEndpoints
     @Produces(MediaType.APPLICATION_JSON)
     public final Response info(final @HeaderParam(REFID) String refId_)
     {
-        if (_logger.isTraceEnabled())
-        {
-            _logger.trace("info(refId_)");
-        }
-
         final String refid = getRefId(refId_);
-        String props = getPropsAsMap();
-        return Response.ok().header(REFID, refid).entity(props.toString()).build();
+        try
+        {
+            MDC.put(REFID, refid);
+            if (_logger.isInfoEnabled())
+            {
+                _logger.info("BasicEndpoints::info(refId_)");
+            }
+
+
+            var props = getPropsAsMap();
+            return Response.ok().header(REFID, refid).entity(props).build();
+        }
+        finally
+        {
+            MDC.clear();
+        }
     }
-
-
-
-
-
-    protected abstract String getPropsAsMap();
-
-
-
-
-
-    public abstract String getVersion();
 
 
 
