@@ -55,17 +55,30 @@ public class HttpClientBuilder
     static ClientConfig createClientConfig(int connectionTimeout_, int readTimout_)
     {
         final ClientConfig config = new ClientConfig();
-        int connectionTimeout = connectionTimeout_ > 0 ? connectionTimeout_ : DEFAULT_CONNECTION_TIMEOUT;
-        int readTimeout = readTimout_ > 0 ? readTimout_ : DEFAULT_READ_TIMEOUT;
 
+        final int connectionTimeout = connectionTimeout_ > 0 ? connectionTimeout_ : DEFAULT_CONNECTION_TIMEOUT;
         _logger.debug("{}={}", ClientProperties.CONNECT_TIMEOUT, connectionTimeout);
         config.property(ClientProperties.CONNECT_TIMEOUT, connectionTimeout);
 
+        final int readTimeout = readTimout_ > 0 ? readTimout_ : DEFAULT_READ_TIMEOUT;
         _logger.debug("{}={}", ClientProperties.READ_TIMEOUT, readTimeout);
         config.property(ClientProperties.READ_TIMEOUT, readTimeout);
 
+        final int cPoolSz = 5;
+        _logger.debug("{}={}", ClientProperties.ASYNC_THREADPOOL_SIZE, cPoolSz);
+        config.property(ClientProperties.ASYNC_THREADPOOL_SIZE, cPoolSz);
+
+        final boolean keepalive = true;
+        _logger.debug("{}={}", "http.keepalive", Boolean.toString(keepalive));
+        System.setProperty("http.keepalive", Boolean.toString(keepalive));
+
+        _logger.debug("{}={}", "http.maxConnections", Integer.toString(cPoolSz));
+        System.setProperty("http.maxConnections", Integer.toString(cPoolSz));
+
         _logger.debug("regestering jackson-json provider...");
         config.register(JacksonJsonProvider.class);
+        
+        // done
         return config;
     }
 

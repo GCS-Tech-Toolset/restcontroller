@@ -119,3 +119,4 @@ public class RestTest
 
   * added `BasicEndpoint` with abstract classes
   * added `HttpUtils` class
+  * added `HttpClientBuilder` to help generate `configured` http clients (`Client`)
