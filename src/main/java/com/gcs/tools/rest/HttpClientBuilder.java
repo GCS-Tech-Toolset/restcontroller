@@ -8,7 +8,7 @@
 
 
 
-package com.gcs.tools.rest.client;
+package com.gcs.tools.rest;
 
 
 
@@ -43,7 +43,7 @@ public class HttpClientBuilder
 
 
 
-    static ClientConfig createClientConfig()
+    public static ClientConfig createClientConfig()
     {
         return createClientConfig(DEFAULT_CONNECTION_TIMEOUT, DEFAULT_READ_TIMEOUT);
     }
@@ -52,7 +52,7 @@ public class HttpClientBuilder
 
 
 
-    static ClientConfig createClientConfig(int connectionTimeout_, int readTimout_)
+    public static ClientConfig createClientConfig(int connectionTimeout_, int readTimout_)
     {
         final ClientConfig config = new ClientConfig();
 
@@ -77,7 +77,7 @@ public class HttpClientBuilder
 
         _logger.debug("regestering jackson-json provider...");
         config.register(JacksonJsonProvider.class);
-        
+
         // done
         return config;
     }
@@ -86,7 +86,7 @@ public class HttpClientBuilder
 
 
 
-    static Client createClient()
+    public static Client createClient()
     {
         ClientConfig cfg = createClientConfig(DEFAULT_READ_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
         return ClientBuilder.newClient(cfg);

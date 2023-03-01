@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response.Status;
 
 
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -45,10 +46,27 @@ public class HttpUtils
 
 
     public static ResponseBuilder respond(
-            Status status_,
-            String refId_)
+            @NonNull Status status_,
+            @NonNull String refId_)
     {
         return Response.status(status_).header(REFID, refId_);
     }
 
+
+
+
+
+    public static boolean isSuccess(@NonNull final Response rsps_)
+    {
+        return rsps_.getStatusInfo().getFamily().equals(Status.Family.SUCCESSFUL);
+    }
+
+
+
+
+
+    public static boolean isNotSuccess(@NonNull final Response rsps_)
+    {
+        return !isSuccess(rsps_);
+    }
 }
