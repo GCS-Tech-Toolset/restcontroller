@@ -27,7 +27,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
+        distribution: 'oracle'
         cache: maven
       env:
         JFROG_SERVER_ID: ${{ secrets.JFROG_SERVER_ID }}
@@ -57,7 +57,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
+        distribution: 'oracle'
         cache: maven
         
     - name: Show Secrets
