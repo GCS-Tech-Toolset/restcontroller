@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gcs.toolset</groupId>
     <artifactId>rest</artifactId>
-    <version>1.10</version>
+    <version>1.2</version>
     <properties>
         <tomcat-version>8.0.48</tomcat-version>
     </properties>
