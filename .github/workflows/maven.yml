@@ -34,7 +34,7 @@ jobs:
         JFROG_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
         JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
     - name: Build with Maven
-      run: mvn -B deploy --file pom.xml -s ./src/main/assembly/maven-settings.xml
+      run: mvn install 
 
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
