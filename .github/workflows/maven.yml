@@ -23,7 +23,7 @@ jobs:
 
     
   build:
-
+    environment: JFROG_USERNAME
     runs-on: ubuntu-latest
 
     steps:
