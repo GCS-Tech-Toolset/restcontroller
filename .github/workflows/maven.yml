@@ -34,6 +34,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+      env:
+        JFROG_SERVER_ID: ${{ secrets.JFROG_SERVER_ID }}
+        JFROG_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
+        JFROG_USERNAME: ${{ secrets.JFROG_USERNAME }}
+    - name: Show Secrets
+      run: echo "username ${{ sectrets.JFROG_USERNAME }}"
     - name: Build with Maven
       run: mvn -B deploy --file pom.xml -s ./src/main/assembly/maven-settings.xml
 
