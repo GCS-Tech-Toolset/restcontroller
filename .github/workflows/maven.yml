@@ -14,7 +14,14 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  JFROG_SERVER_ID: ${{ vars.JFROG_SERVER_ID }}
+  JFROG_PASSWORD: ${{ vars.JFROG_PASSWORD }}
+  JFROG_USERNAME: ${{ vars.JFROG_USERNAME }}
+    
 jobs:
+
+    
   build:
 
     runs-on: ubuntu-latest
