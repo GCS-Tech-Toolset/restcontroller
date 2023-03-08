@@ -113,6 +113,32 @@ public class RestTest
 ```
 
 
+# Basic Endpoints Usage
+In order to avoide re-writing the basic endpoints again and again, here is an abstracted class. Here is an example use case:
+
+```java
+@Slf4j
+@Path("/")
+@RequiredArgsConstructor(onConstructor = @__(@Inject))
+public class BasicEndpoint extends BasicEndpoints
+{
+    private final AppProps _props;
+
+    @Override
+    protected Map<String, String> getPropsAsMap()
+    {
+        return _props.toMap();
+    }
+
+    @Override
+    public String getVersion()
+    {
+        return _props.getVersion();
+    }
+}
+
+```
+
 
 # Releases
 ### 1.10
