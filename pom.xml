@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+
   <modelVersion>4.0.0</modelVersion>
   <groupId>gcs.toolset</groupId>
   <artifactId>rest</artifactId>
-  <version>1.20</version>
+  <version>1.30</version>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
   </properties>
+
+
   <repositories>
     <repository>
       <id>gcs-central</id>
@@ -22,6 +30,8 @@
       </snapshots>
     </repository>
   </repositories>
+
+
   <pluginRepositories>
     <pluginRepository>
       <id>gcs-central</id>
@@ -35,6 +45,8 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -181,6 +193,8 @@
       <version>2.36</version>
     </dependency>
   </dependencies>
+
+
   <distributionManagement>
     <repository>
       <id>central</id>
@@ -188,6 +202,8 @@
       <url>https://gcsrepo.jfrog.io/artifactory/gcs-libs-release</url>
     </repository>
   </distributionManagement>
+
+
   <build>
     <plugins>
       <plugin>
@@ -217,8 +233,10 @@
         </dependencies>
         <configuration>
           <systemPropertyVariables>
-            <log4j.configuration>file:${project.basedir}/src/test/resources/log4j.console</log4j.configuration>
-            <logback.configurationFile>file:${project.basedir}/src/test/resources/logback-test.xml</logback.configurationFile>
+            <log4j.configuration>
+              file:${project.basedir}/src/test/resources/log4j.console</log4j.configuration>
+            <logback.configurationFile>
+              file:${project.basedir}/src/test/resources/logback-test.xml</logback.configurationFile>
             <APP_CONFIG>file:${project.basedir}/etc/restcontroller.xml</APP_CONFIG>
           </systemPropertyVariables>
         </configuration>

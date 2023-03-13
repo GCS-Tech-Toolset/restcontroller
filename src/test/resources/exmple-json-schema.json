@@ -13,7 +13,7 @@
         "string",
         "null"
       ],
-      "minLength": 0,
+      "minLength": 2,
       "maxLength": 36
     }
   },
