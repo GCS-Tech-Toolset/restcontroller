@@ -362,7 +362,7 @@ public class HttpRestController implements LifeCycle.Listener
 	{
 		if (_server == null)
 		{
-			_logger.error("can't join, server=NULL");
+			_logger.error("can't join.. the internal server varaible (_server) is NULL... This is most likely due to the server not starting correctly");
 			return;
 		}
 		_server.join();
