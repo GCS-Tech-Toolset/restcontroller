@@ -42,14 +42,14 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
-public class SchemaValidator
+public class JsonSchemaValidator
 {
 	private HashMap<Class<?>, JsonSchema>	_class2schema;
 	private ObjectMapper					_mapper;
 
 
 	@Inject
-	public SchemaValidator()
+	public JsonSchemaValidator()
 	{
 		_class2schema = new HashMap<>();
 		_mapper = new ObjectMapper();

@@ -39,7 +39,7 @@ public class SchemaValidatorTest
 	@Test @SneakyThrows
 	public void test()
 	{
-		SchemaValidator validator = new SchemaValidator();
+		JsonSchemaValidator validator = new JsonSchemaValidator();
 		validator.regiseter(Floor.class, "/exmple-json-schema.json");
 		String json = "{\"name\":\"floor2\",\"id\":\"0ae298c5-2c17-49b9-a8ed-7681dd3e1743\"}";
 
@@ -56,7 +56,7 @@ public class SchemaValidatorTest
 	@Test(expected = ProcessingException.class) @SneakyThrows
 	public void testMissingJsonObject()
 	{
-		SchemaValidator validator = new SchemaValidator();
+		JsonSchemaValidator validator = new JsonSchemaValidator();
 		validator.regiseter(Floor.class, "/exmple-json-schema.json");
 		String json = "{\"name\":\"floor2\"}";
 
@@ -71,7 +71,7 @@ public class SchemaValidatorTest
 	@Test(expected = ProcessingException.class) @SneakyThrows
 	public void testBadUuid()
 	{
-		SchemaValidator validator = new SchemaValidator();
+		JsonSchemaValidator validator = new JsonSchemaValidator();
 		validator.regiseter(Floor.class, "/exmple-json-schema.json");
 		String json = "{\"name\":\"floor2\",\"id\":\"0ae298c5\"}";
 
@@ -86,7 +86,7 @@ public class SchemaValidatorTest
 	@Test(expected = ProcessingException.class) @SneakyThrows
 	public void testBadSized()
 	{
-		SchemaValidator validator = new SchemaValidator();
+		JsonSchemaValidator validator = new JsonSchemaValidator();
 		validator.regiseter(Floor.class, "/exmple-json-schema.json");
 		String json = "{\"name\":\"f\",\"id\":\"0ae298c5\"}";
 
