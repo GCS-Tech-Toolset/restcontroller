@@ -14,18 +14,13 @@ package com.gcs.tools.rest;
 
 
 
-import java.util.Optional;
-
-
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
-
-
-
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Optional;
 
 
 
@@ -46,8 +41,8 @@ public class HttpUtils
 
 
     public static ResponseBuilder respond(
-            @NonNull Status status_,
-            @NonNull String refId_)
+        @NonNull Status status_,
+        @NonNull String refId_)
     {
         return Response.status(status_).header(REFID, refId_);
     }
@@ -69,4 +64,15 @@ public class HttpUtils
     {
         return !isSuccess(rsps_);
     }
+
+
+
+    public static void exceptOnNull(String lbl_, String val_) throws NullPointerException
+    {
+        if (lbl_ == null || lbl_.isEmpty())
+        {
+            throw new NullPointerException(lbl_ + ": can't be null or empty");
+        }
+    }
+
 }
