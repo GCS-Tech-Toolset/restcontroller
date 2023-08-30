@@ -69,7 +69,7 @@ public class HttpUtils
 
     public static void exceptOnNull(String lbl_, String val_) throws NullPointerException
     {
-        if (lbl_ == null || lbl_.isEmpty())
+        if (val_ == null || val_.isEmpty())
         {
             throw new NullPointerException(lbl_ + ": can't be null or empty");
         }

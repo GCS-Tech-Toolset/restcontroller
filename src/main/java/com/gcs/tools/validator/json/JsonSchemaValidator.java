@@ -129,7 +129,7 @@ public class JsonSchemaValidator
 	{
 		StringBuilder buff = new StringBuilder();
 		int cntr = 0;
-		itr_.next();
+
 		while (itr_.hasNext())
 		{
 			buff.append("[");

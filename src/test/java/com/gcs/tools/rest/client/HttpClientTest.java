@@ -157,7 +157,7 @@ public class HttpClientTest
         {
             if (_httpSimulator == null)
             {
-                _httpSimulator = new HttpRestController("junit", 8000);
+                _httpSimulator = new HttpRestController("junit", 8265);
                 _httpSimulator.register(new Simulator());
                 _httpSimulator.start();
             }

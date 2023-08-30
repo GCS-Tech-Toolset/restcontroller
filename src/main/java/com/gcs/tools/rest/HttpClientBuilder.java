@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HttpClientBuilder
 {
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 1_000;
-    public static final int DEFAULT_READ_TIMEOUT       = 4_000;
+    public static int DEFAULT_CONNECTION_TIMEOUT = 1_000;
+    public static int DEFAULT_READ_TIMEOUT = 4_000;
 
 
 
@@ -88,7 +88,14 @@ public class HttpClientBuilder
 
     public static Client createClient()
     {
-        ClientConfig cfg = createClientConfig(DEFAULT_READ_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
+        return createClient(DEFAULT_CONNECTION_TIMEOUT, DEFAULT_READ_TIMEOUT);
+    }
+
+
+
+    public static Client createClient(int connectTimeout_, int readTimeout_)
+    {
+        ClientConfig cfg = createClientConfig(connectTimeout_, readTimeout_);
         return ClientBuilder.newClient(cfg);
     }
 
