@@ -74,10 +74,10 @@ public abstract class BasicEndpoints
             _logger.trace("healthcheck(refId_)");
         }
 
-        String refid = getRefId(refId_);
+        final String refid = getRefId(refId_);
         try
         {
-            MDC.put(refId_, refid);
+            MDC.put(REFID, refid);
             if (_logger.isInfoEnabled())
             {
                 _logger.info("BasicEndpoints::healthcheck(refId_)");

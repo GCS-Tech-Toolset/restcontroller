@@ -14,9 +14,7 @@ package com.gcs.tools.validator.json;
 
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -59,7 +57,7 @@ public class JsonSchemaValidator
 
 
 
-	public <T> void regiseter(Class<T> classType_, String schemaFile_) throws IOException
+	public <T> void register(Class<T> classType_, String schemaFile_) throws IOException
 	{
 		try
 		{
@@ -80,7 +78,7 @@ public class JsonSchemaValidator
 			final JsonSchema schema = factory.getJsonSchema(uriAsString);
 
 			_class2schema.put(classType_, schema);
-			_logger.info("registered calss type:{}, with schema file:{}", classType_.toString(), schemaFile_);
+			_logger.info("registered class type:{}, with schema file:{}", classType_.toString(), schemaFile_);
 		}
 		catch (ProcessingException | URISyntaxException ex_)
 		{
@@ -129,7 +127,6 @@ public class JsonSchemaValidator
 	{
 		StringBuilder buff = new StringBuilder();
 		int cntr = 0;
-
 		while (itr_.hasNext())
 		{
 			buff.append("[");

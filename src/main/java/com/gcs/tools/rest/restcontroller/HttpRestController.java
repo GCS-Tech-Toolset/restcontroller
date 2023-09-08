@@ -35,6 +35,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
+import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -131,7 +132,16 @@ public class HttpRestController implements LifeCycle.Listener
 
 
 
-		String pathSpec = "/" + appName_ + "/*";
+		String pathSpec;
+		if ( StringUtil.isNotBlank(appName_) )
+		{
+			pathSpec = "/" + appName_ + "/*";
+		}
+		else
+		{
+			pathSpec = "/*";
+		}
+
 		ServletContainer container = new ServletContainer(_resourceConfig);
 		ServletHolder servletHolder = new ServletHolder(container);
 		servletHolder.setInitParameter("idleTimout", "1");
